@@ -1,3 +1,5 @@
+const chats = [];
+const CHAT_CHANNEL = "CHAT_CHANNEL";
 const resolvers = {
     Query: {
         chats(root, args, context) {

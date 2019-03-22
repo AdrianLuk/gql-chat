@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Message from "./Message";
-import { gql } from "apollo-boost";
-import { Query, Mutation } from "react-apollo";
+import gql from "graphql-tag";
+import { Query, Mutation, Subscription } from "react-apollo";
 
 const GET_CHATS = gql`
     query {
@@ -13,10 +13,21 @@ const GET_CHATS = gql`
     }
 `;
 const SEND_MESSAGE = gql`
-    mutation sendMessage($type: String!) {
-        sendMessage(type: $type) {
+    mutation sendMessage($from: String!, $message: String!) {
+        sendMessage(from: $from, message: $message) {
             id
-            type
+            from
+            message
+        }
+    }
+`;
+
+const MESSAGES_SUBSCRIPTION = gql`
+    subscription messageSent {
+        messageSent {
+            id
+            from
+            message
         }
     }
 `;
@@ -78,6 +89,9 @@ export class Chatbox extends Component {
                                                             return data.chats.map(
                                                                 chat => (
                                                                     <Message
+                                                                        key={
+                                                                            chat.id
+                                                                        }
                                                                         chat={
                                                                             chat
                                                                         }
@@ -86,6 +100,19 @@ export class Chatbox extends Component {
                                                             );
                                                         }}
                                                     </Query>
+                                                    <Subscription
+                                                        subscription={
+                                                            MESSAGES_SUBSCRIPTION
+                                                        }>
+                                                        {({
+                                                            data,
+                                                            loading,
+                                                            error
+                                                        }) => {
+                                                            console.log(data);
+                                                            return null;
+                                                        }}
+                                                    </Subscription>
                                                     <Mutation
                                                         mutation={SEND_MESSAGE}>
                                                         {(
@@ -94,12 +121,16 @@ export class Chatbox extends Component {
                                                         ) => (
                                                             <div>
                                                                 <form
+                                                                    className="form"
                                                                     onSubmit={e => {
                                                                         e.preventDefault();
                                                                         sendMessage(
                                                                             {
                                                                                 variables: {
-                                                                                    type:
+                                                                                    from: this
+                                                                                        .state
+                                                                                        .username,
+                                                                                    message:
                                                                                         input.value
                                                                                 }
                                                                             }
@@ -108,16 +139,35 @@ export class Chatbox extends Component {
                                                                             "";
                                                                     }}
                                                                     action="">
-                                                                    <input
-                                                                        ref={node => {
-                                                                            input = node;
-                                                                        }}
-                                                                    />
-                                                                    <button type="submit">
-                                                                        {" "}
-                                                                        Send
-                                                                        Message
-                                                                    </button>
+                                                                    <div className="form-group">
+                                                                        <div className="input-group">
+                                                                            <input
+                                                                                className="form-control"
+                                                                                ref={node => {
+                                                                                    input = node;
+                                                                                }}
+                                                                                onChange={e => {
+                                                                                    this.setState(
+                                                                                        {
+                                                                                            message:
+                                                                                                e
+                                                                                                    .target
+                                                                                                    .value
+                                                                                        }
+                                                                                    );
+                                                                                }}
+                                                                            />
+                                                                            <div className="input-group-append">
+                                                                                <button
+                                                                                    type="submit"
+                                                                                    className="btn btn-primary">
+                                                                                    {" "}
+                                                                                    Send
+                                                                                    Message
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                                 </form>
                                                             </div>
                                                         )}

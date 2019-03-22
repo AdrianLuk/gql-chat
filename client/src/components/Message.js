@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 
 const Message = props => {
+    // console.log(props)
     return (
         <Fragment>
             <dl>
