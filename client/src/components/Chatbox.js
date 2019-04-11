@@ -52,6 +52,27 @@ export class Chatbox extends Component {
     handleChange(e) {
         this.setState({ username: e.target.value });
     }
+    subscribeToNewMessages = subscribeToMore => {
+        subscribeToMore({
+            document: MESSAGES_SUBSCRIPTION,
+            updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data) return prev;
+                // const newFeedItem = subscriptionData.data.chats;
+                // const chatList = [
+                //     ...prev.chats,
+                //     subscriptionData.data.messageSent
+                // ];
+                // return chatList.map(chat => (
+                return (
+                    <Message
+                        key={subscriptionData.data.messageSent.id}
+                        chat={subscriptionData.data.messageSent}
+                    />
+                );
+                // ));
+            }
+        });
+    };
     render() {
         let input;
         return (
@@ -65,14 +86,15 @@ export class Chatbox extends Component {
                                         <div className="col-md-12">
                                             <div className="card">
                                                 <div className="card-header">
-                                                    Chatbox
+                                                    Adrian Chat
                                                 </div>
                                                 <div className="card-body">
                                                     <Query query={GET_CHATS}>
                                                         {({
                                                             loading,
                                                             error,
-                                                            data
+                                                            data,
+                                                            subscribeToMore
                                                         }) => {
                                                             if (loading)
                                                                 return (
@@ -86,6 +108,9 @@ export class Chatbox extends Component {
                                                                         Error :({" "}
                                                                     </div>
                                                                 );
+                                                            this.subscribeToNewMessages(
+                                                                subscribeToMore
+                                                            );
                                                             return data.chats.map(
                                                                 chat => (
                                                                     <Message
@@ -100,19 +125,38 @@ export class Chatbox extends Component {
                                                             );
                                                         }}
                                                     </Query>
-                                                    <Subscription
+                                                    {/*<Subscription
                                                         subscription={
                                                             MESSAGES_SUBSCRIPTION
                                                         }>
                                                         {({
-                                                            data,
+                                                            data: {
+                                                                messageSent
+                                                            },
                                                             loading,
                                                             error
                                                         }) => {
-                                                            console.log(data);
-                                                            return null;
+                                                            if (loading)
+                                                                return (
+                                                                    <div>
+                                                                        Loading...
+                                                                    </div>
+                                                                );
+                                                            if (error)
+                                                                return (
+                                                                    <div>
+                                                                        Error :({" "}
+                                                                    </div>
+                                                                );
+                                                            return (
+                                                                <Message
+                                                                    chat={
+                                                                        messageSent
+                                                                    }
+                                                                />
+                                                            );
                                                         }}
-                                                    </Subscription>
+                                                    </Subscription>*/}
                                                     <Mutation
                                                         mutation={SEND_MESSAGE}>
                                                         {(
