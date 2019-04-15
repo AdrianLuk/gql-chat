@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import Message from "./Message";
+import MessageList from "./MessageList";
 import gql from "graphql-tag";
-import { Query, Mutation, Subscription } from "react-apollo";
+import { Query, Mutation } from "react-apollo";
 
 const GET_CHATS = gql`
-    query {
+    query ChatList {
         chats {
             id
             from
@@ -52,27 +52,6 @@ export class Chatbox extends Component {
     handleChange(e) {
         this.setState({ username: e.target.value });
     }
-    subscribeToNewMessages = subscribeToMore => {
-        subscribeToMore({
-            document: MESSAGES_SUBSCRIPTION,
-            updateQuery: (prev, { subscriptionData }) => {
-                if (!subscriptionData.data) return prev;
-                // const newFeedItem = subscriptionData.data.chats;
-                // const chatList = [
-                //     ...prev.chats,
-                //     subscriptionData.data.messageSent
-                // ];
-                // return chatList.map(chat => (
-                return (
-                    <Message
-                        key={subscriptionData.data.messageSent.id}
-                        chat={subscriptionData.data.messageSent}
-                    />
-                );
-                // ));
-            }
-        });
-    };
     render() {
         let input;
         return (
@@ -91,72 +70,49 @@ export class Chatbox extends Component {
                                                 <div className="card-body">
                                                     <Query query={GET_CHATS}>
                                                         {({
-                                                            loading,
-                                                            error,
-                                                            data,
-                                                            subscribeToMore
-                                                        }) => {
-                                                            if (loading)
-                                                                return (
-                                                                    <div>
-                                                                        Loading...
-                                                                    </div>
-                                                                );
-                                                            if (error)
-                                                                return (
-                                                                    <div>
-                                                                        Error :({" "}
-                                                                    </div>
-                                                                );
-                                                            this.subscribeToNewMessages(
-                                                                subscribeToMore
-                                                            );
-                                                            return data.chats.map(
-                                                                chat => (
-                                                                    <Message
-                                                                        key={
-                                                                            chat.id
+                                                            subscribeToMore,
+                                                            ...chats
+                                                        }) => (
+                                                            <MessageList
+                                                                {...chats}
+                                                                subscribeToNewMessages={() =>
+                                                                    subscribeToMore(
+                                                                        {
+                                                                            document: MESSAGES_SUBSCRIPTION,
+                                                                            updateQuery: (
+                                                                                prev,
+                                                                                {
+                                                                                    subscriptionData
+                                                                                }
+                                                                            ) => {
+                                                                                if (
+                                                                                    !subscriptionData.data
+                                                                                )
+                                                                                    return prev;
+                                                                                const newMessage =
+                                                                                    subscriptionData
+                                                                                        .data
+                                                                                        .messageSent;
+                                                                                return Object.assign(
+                                                                                    {},
+                                                                                    prev,
+                                                                                    {
+                                                                                        chats: [
+                                                                                            ...prev.chats,
+                                                                                            newMessage
+                                                                                        ].slice(
+                                                                                            -10
+                                                                                        )
+                                                                                    }
+                                                                                );
+                                                                            }
                                                                         }
-                                                                        chat={
-                                                                            chat
-                                                                        }
-                                                                    />
-                                                                )
-                                                            );
-                                                        }}
+                                                                    )
+                                                                }
+                                                            />
+                                                        )}
                                                     </Query>
-                                                    {/*<Subscription
-                                                        subscription={
-                                                            MESSAGES_SUBSCRIPTION
-                                                        }>
-                                                        {({
-                                                            data: {
-                                                                messageSent
-                                                            },
-                                                            loading,
-                                                            error
-                                                        }) => {
-                                                            if (loading)
-                                                                return (
-                                                                    <div>
-                                                                        Loading...
-                                                                    </div>
-                                                                );
-                                                            if (error)
-                                                                return (
-                                                                    <div>
-                                                                        Error :({" "}
-                                                                    </div>
-                                                                );
-                                                            return (
-                                                                <Message
-                                                                    chat={
-                                                                        messageSent
-                                                                    }
-                                                                />
-                                                            );
-                                                        }}
-                                                    </Subscription>*/}
+
                                                     <Mutation
                                                         mutation={SEND_MESSAGE}>
                                                         {(

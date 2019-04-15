@@ -7,7 +7,7 @@ import { ApolloProvider } from "react-apollo";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
-import { onError } from "apollo-link-error";
+// import { onError } from "apollo-link-error";
 // import { withClientState } from "apollo-link-state";
 import { split } from "apollo-link";
 import { WebSocketLink } from "apollo-link-ws";
