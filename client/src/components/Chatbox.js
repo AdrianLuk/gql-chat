@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import MessageList from "./MessageList";
+import SwearCount from "./SwearCount";
 import gql from "graphql-tag";
 import { Query, Mutation } from "react-apollo";
 
@@ -9,15 +10,21 @@ const GET_CHATS = gql`
             id
             from
             message
+            createdAt
         }
     }
 `;
 const SEND_MESSAGE = gql`
-    mutation sendMessage($from: String!, $message: String!) {
-        sendMessage(from: $from, message: $message) {
+    mutation sendMessage(
+        $from: String!
+        $message: String!
+        $createdAt: String!
+    ) {
+        sendMessage(from: $from, message: $message, createdAt: $createdAt) {
             id
             from
             message
+            createdAt
         }
     }
 `;
@@ -28,6 +35,7 @@ const MESSAGES_SUBSCRIPTION = gql`
             id
             from
             message
+            createdAt
         }
     }
 `;
@@ -38,7 +46,8 @@ export class Chatbox extends Component {
         this.state = {
             username: "",
             message: "",
-            entered: false
+            entered: false,
+            swearCount: 0
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -52,6 +61,9 @@ export class Chatbox extends Component {
     handleChange(e) {
         this.setState({ username: e.target.value });
     }
+    handleSwear = () => {
+        this.setState({ swearCount: this.state.swearCount + 1 });
+    };
     render() {
         let input;
         return (
@@ -65,7 +77,13 @@ export class Chatbox extends Component {
                                         <div className="col-md-12">
                                             <div className="card">
                                                 <div className="card-header">
-                                                    Adrian Chat
+                                                    Adrian Chat{" "}
+                                                    {/* <SwearCount
+                                                        swearCount={
+                                                            this.state
+                                                                .swearCount
+                                                        }
+                                                    /> */}
                                                 </div>
                                                 <div className="card-body">
                                                     <Query query={GET_CHATS}>
@@ -131,7 +149,8 @@ export class Chatbox extends Component {
                                                                                         .state
                                                                                         .username,
                                                                                     message:
-                                                                                        input.value
+                                                                                        input.value,
+                                                                                    createdAt: new Date().toLocaleTimeString()
                                                                                 }
                                                                             }
                                                                         );
