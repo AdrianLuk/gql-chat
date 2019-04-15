@@ -8,8 +8,8 @@ const resolvers = {
     },
 
     Mutation: {
-        sendMessage(root, { from, message }, { pubsub }) {
-            const chat = { id: chats.length + 1, from, message };
+        sendMessage(root, { from, message, createdAt }, { pubsub }) {
+            const chat = { id: chats.length + 1, from, message, createdAt };
 
             chats.push(chat);
             pubsub.publish("CHAT_CHANNEL", { messageSent: chat });
