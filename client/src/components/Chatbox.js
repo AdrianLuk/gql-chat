@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import MessageList from "./MessageList";
-import SwearCount from "./SwearCount";
+// import SwearCount from "./SwearCount";
 import gql from "graphql-tag";
 import { Query, Mutation } from "react-apollo";
 
@@ -46,8 +46,8 @@ export class Chatbox extends Component {
         this.state = {
             username: "",
             message: "",
-            entered: false,
-            swearCount: 0
+            entered: false
+            // swearCount: 0
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -61,9 +61,9 @@ export class Chatbox extends Component {
     handleChange(e) {
         this.setState({ username: e.target.value });
     }
-    handleSwear = () => {
-        this.setState({ swearCount: this.state.swearCount + 1 });
-    };
+    // handleSwear = () => {
+    //     this.setState({ swearCount: this.state.swearCount + 1 });
+    // };
     render() {
         let input;
         return (

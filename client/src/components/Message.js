@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-const swearjar = require("swearjar");
+// const swearjar = require("swearjar");
 
 const Message = props => {
     // console.log(props);
@@ -17,7 +17,7 @@ const Message = props => {
                     className="row align-items-center justify-content-between">
                     <div>
                         <dt>{props.chat.from}</dt>
-                        <dd>{swearjar.censor(props.chat.message)}</dd>
+                        <dd>{props.chat.message}</dd>
                     </div>
                     <dd>{props.chat.createdAt}</dd>
                 </div>
