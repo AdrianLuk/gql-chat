@@ -15,11 +15,11 @@ const Message = props => {
                 <div
                     style={{ padding: "0 1.25rem" }}
                     className="row align-items-center justify-content-between">
+                    <dd>{props.chat.message}</dd>
                     <div>
                         <dt>{props.chat.from}</dt>
-                        <dd>{props.chat.message}</dd>
+                        <dd>{props.chat.createdAt}</dd>
                     </div>
-                    <dd>{props.chat.createdAt}</dd>
                 </div>
             </dl>
             <hr />
